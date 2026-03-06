@@ -1,0 +1,40 @@
+﻿npx : 
+At line:1 char:1
++ npx eslint . 2>&1 | 
+Out-File -Encoding utf
+8 eslint-crash.log
++ ~~~~~~~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (:String) [   
+ ], RemoteExceptio    
+n
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+Oops! Something went w
+rong! :(
+
+ESLint: 8.57.1
+
+ESLint couldn't find t
+he config "prettier" t
+o extend from. Please 
+check that the name of
+ the config is correct
+.
+
+The config "prettier" 
+was referenced from th
+e config file in "C:\U
+sers\abyma\Downloads\C
+ompany Profil\bylian-t
+rans\.eslintrc.json".
+
+If you still have prob
+lems, please stop by h
+ttps://eslint.org/chat
+/help to chat with the
+ team.
+

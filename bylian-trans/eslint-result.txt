@@ -1,0 +1,96 @@
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\next-env.d.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\next.config.js[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\app\(public)\layout.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\app\(public)\page.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\app\layout.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\app\robots.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\app\sitemap.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\layout\Footer.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\layout\Navbar.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\layout\WhatsAppFloat.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\ArmadaSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\BlogPreviewSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\CTASection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\CaraPesanSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\GaleriPreviewSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\HeroSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\KeunggulanSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\MarqueeSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\RuteUnggulanSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\SearchBoxSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\StatsSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\TestimoniSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\sections\TrackingPreviewSection.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\ui\badge.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\ui\button.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\ui\card.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\components\ui\input.tsx[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\data\bylian.data.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\lib\utils.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\src\store\booking.store.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\abyma\Downloads\Company Profil\bylian-trans\tailwind.config.ts[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Definition for rule '@typescript-eslint/no-unused-vars' was not found  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[31m[1m✖ 31 problems (31 errors, 0 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

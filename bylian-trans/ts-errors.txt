@@ -1,0 +1,3 @@
+src/app/(public)/tentang-kami/page.tsx(112,13): error TS17008: JSX element 'svg' has no corresponding closing tag.
+src/app/(public)/tentang-kami/page.tsx(112,305): error TS1003: Identifier expected.
+src/app/(public)/tentang-kami/page.tsx(113,1): error TS1005: '</' expected.

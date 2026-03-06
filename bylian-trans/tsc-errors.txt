@@ -1,0 +1,2 @@
+﻿src/components/sections/BlogPreviewSection.tsx(10,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.
+src/components/sections/RuteUnggulanSection.tsx(10,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.

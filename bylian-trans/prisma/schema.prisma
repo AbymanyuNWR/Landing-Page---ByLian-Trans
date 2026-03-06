@@ -1,0 +1,742 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// 1. AUTH & USERS (NextAuth.js compatible with added fields)
+// ----------------------------------------------------------------------------
+model User {
+  id                    String    @id @default(uuid())
+  name                  String?
+  email                 String?   @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?   // Hashed bcrypt
+  phoneNumber           String?   @unique
+  role                  Role      @default(GUEST)
+  loyaltyPoints         Int       @default(0)
+  loyaltyLevel          LoyaltyLevel @default(BRONZE)
+  
+  // Relations
+  accounts              Account[]
+  sessions              Session[]
+  bookings              Booking[]
+  loyaltyTransactions   LoyaltyTransaction[]
+  notifications         Notification[]
+  pushSubscriptions     PushSubscription[]
+  auditLogs             AuditLog[]
+
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  @@map("users")
+}
+
+model Account {
+  id                 String  @id @default(uuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("password_reset_tokens")
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  otp       String
+  purpose   String   // "2FA_ADMIN", "PHONE_VERIFY"
+  expires   DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("otp_verifications")
+}
+
+enum Role {
+  GUEST
+  CUSTOMER
+  AGENT
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum LoyaltyLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+// ----------------------------------------------------------------------------
+// 2. BUS FLEET & MAINTENANCE
+// ----------------------------------------------------------------------------
+model Bus {
+  id            String   @id @default(uuid())
+  name          String   // e.g "Bylian Executive 1"
+  model         String   // "Mercedes Benz OH 1626"
+  licensePlate  String   @unique @map("license_plate")
+  productionYear Int     @map("production_year")
+  capacity      Int
+  seatConfig    String   // "2-2", "2-1"
+  classType     BusClass @map("class_type")
+  gpsDeviceId   String?  @unique @map("gps_device_id")
+  isActive      Boolean  @default(true) @map("is_active")
+
+  // Relations
+  facilities    BusFacility[]
+  images        BusImage[]
+  maintenances  BusMaintenance[]
+  schedules     BusSchedule[]
+  locations     BusLocation[]
+  status        BusStatus?
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("buses")
+}
+
+enum BusClass {
+  EKONOMI_AC
+  BISNIS_AC
+  EKSEKUTIF
+  SUPER_EKSEKUTIF
+}
+
+model BusFacility {
+  id        String  @id @default(uuid())
+  busId     String  @map("bus_id")
+  name      String  // "AC", "WiFi", "Toilet"
+  iconUrl   String? @map("icon_url")
+  isAvail   Boolean @default(true) @map("is_avail")
+
+  bus       Bus     @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@map("bus_facilities")
+}
+
+model BusImage {
+  id        String  @id @default(uuid())
+  busId     String  @map("bus_id")
+  imageUrl  String  @map("image_url")
+  isMain    Boolean @default(false) @map("is_main")
+
+  bus       Bus     @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@map("bus_images")
+}
+
+model BusMaintenance {
+  id          String   @id @default(uuid())
+  busId       String   @map("bus_id")
+  date        DateTime
+  description String
+  cost        Float?
+  status      MaintenanceStatus
+
+  bus         Bus      @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("bus_maintenances")
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ----------------------------------------------------------------------------
+// 3. ROUTES & SCHEDULES
+// ----------------------------------------------------------------------------
+model BusRoute {
+  id            String    @id @default(uuid())
+  origin        String
+  destination   String
+  slug          String    @unique
+  distance      Float     // in km
+  estDuration   Int       @map("est_duration") // in minutes
+  isActive      Boolean   @default(true) @map("is_active")
+  
+  // Prices by class
+  priceEkonomi  Float?    @map("price_ekonomi")
+  priceBisnis   Float?    @map("price_bisnis")
+  priceEksekutif Float?   @map("price_eksekutif")
+  priceSuper    Float?    @map("price_super")
+
+  // Relations
+  stops         RouteStop[]
+  schedules     BusSchedule[]
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  @@map("bus_routes")
+}
+
+model RouteStop {
+  id            String   @id @default(uuid())
+  routeId       String   @map("route_id")
+  city          String
+  orderIndex    Int      @map("order_index")
+  isRestArea    Boolean  @default(false) @map("is_rest_area")
+  estWaitTime   Int?     @map("est_wait_time") // minutes (for rest area)
+  
+  route         BusRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  @@map("route_stops")
+}
+
+model BusSchedule {
+  id            String   @id @default(uuid())
+  routeId       String   @map("route_id")
+  busId         String   @map("bus_id")
+  departureTime DateTime @map("departure_time")
+  estArrivalTime DateTime @map("est_arrival_time")
+  departurePool String   @map("departure_pool")
+  arrivalPool   String   @map("arrival_pool")
+  price         Float    // Actual price for this trip
+  
+  // Status
+  status        ScheduleStatus @default(SCHEDULED)
+
+  // Relations
+  route         BusRoute @relation(fields: [routeId], references: [id], onDelete: Restrict)
+  bus           Bus      @relation(fields: [busId], references: [id], onDelete: Restrict)
+  seats         Seat[]
+  bookings      Booking[]
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("bus_schedules")
+}
+
+enum ScheduleStatus {
+  SCHEDULED
+  BOARDING
+  IN_TRANSIT
+  ARRIVED
+  DELAYED
+  CANCELLED
+}
+
+// Seat is a materialized representation of a seat on a specific schedule
+model Seat {
+  id            String   @id @default(uuid())
+  scheduleId    String   @map("schedule_id")
+  seatNumber    String   @map("seat_number") // "1A", "1B", etc.
+  status        SeatStatus @default(AVAILABLE)
+
+  schedule      BusSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  passengers    BookingPassenger[]
+
+  @@unique([scheduleId, seatNumber])
+  @@map("seats")
+}
+
+enum SeatStatus {
+  AVAILABLE
+  LOCKED
+  BOOKED
+}
+
+// ----------------------------------------------------------------------------
+// 4. BOOKINGS & PAYMENTS
+// ----------------------------------------------------------------------------
+model Booking {
+  id            String   @id @default(uuid())
+  bookingCode   String   @unique @map("booking_code") // "BY-XXXXXXXX"
+  userId        String?  @map("user_id") // Optional if guest checkout
+  scheduleId    String   @map("schedule_id")
+  agentId       String?  @map("agent_id")
+  promoId       String?  @map("promo_id")
+  
+  status        BookingStatus @default(PENDING)
+  
+  // Pricing
+  subtotal      Float
+  discountAmount Float   @default(0) @map("discount_amount")
+  serviceFee    Float    @default(0) @map("service_fee")
+  totalAmount   Float    @map("total_amount")
+
+  customerEmail String   @map("customer_email")
+  customerPhone String   @map("customer_phone")
+  specialNotes  String?  @map("special_notes")
+
+  // Times
+  expiresAt     DateTime @map("expires_at")
+
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  schedule      BusSchedule @relation(fields: [scheduleId], references: [id], onDelete: Restrict)
+  agent         Agent?   @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  promo         PromoCode? @relation(fields: [promoId], references: [id], onDelete: SetNull)
+  
+  passengers    BookingPassenger[]
+  payment       Payment?
+  statusLogs    BookingStatusLog[]
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+  COMPLETED
+}
+
+model BookingPassenger {
+  id            String   @id @default(uuid())
+  bookingId     String   @map("booking_id")
+  seatId        String   @map("seat_id")
+  
+  name          String
+  idNumber      String   @map("id_number") // KTP/Passport
+  gender        Gender
+  birthDate     DateTime @map("birth_date")
+  
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  seat          Seat     @relation(fields: [seatId], references: [id], onDelete: Restrict)
+
+  @@map("booking_passengers")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model BookingStatusLog {
+  id            String   @id @default(uuid())
+  bookingId     String   @map("booking_id")
+  status        BookingStatus
+  reason        String?
+  changedBy     String?  // Admin ID or User ID or System
+
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("booking_status_logs")
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique @map("booking_id")
+  transactionId String?  @unique @map("transaction_id") // Midtrans ID
+  
+  amount        Float
+  paymentMethod String?  @map("payment_method") // "credit_card", "gopay", "qris"
+  status        PaymentStatus @default(PENDING)
+  
+  // Snap Token stuff
+  snapToken     String?  @map("snap_token")
+  snapRedirectUrl String? @map("snap_redirect_url")
+
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  webhooks      PaymentWebhookLog[]
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model PaymentWebhookLog {
+  id            String   @id @default(uuid())
+  paymentId     String   @map("payment_id")
+  payload       Json
+  signature     String
+  status        String   // "processed", "ignored", "failed"
+
+  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("payment_webhook_logs")
+}
+
+// ----------------------------------------------------------------------------
+// 5. GPS TRACKING
+// ----------------------------------------------------------------------------
+model BusLocation {
+  id            String   @id @default(uuid())
+  busId         String   @map("bus_id")
+  latitude      Float
+  longitude     Float
+  speed         Float
+  heading       Float?
+  
+  bus           Bus      @relation(fields: [busId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+
+  @@index([busId, timestamp])
+  @@map("bus_locations")
+}
+
+model BusStatus {
+  busId         String   @id @map("bus_id")
+  currentLat    Float    @map("current_lat")
+  currentLng    Float    @map("current_lng")
+  lastUpdate    DateTime @map("last_update")
+  statusText    String   // "Berjalan Normal", "Istirahat", "Delay"
+  
+  bus           Bus      @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@map("bus_statuses")
+}
+
+// ----------------------------------------------------------------------------
+// 6. BUSINESS ENTITIES & ENGAGEMENT
+// ----------------------------------------------------------------------------
+model Agent {
+  id            String   @id @default(uuid())
+  name          String
+  city          String
+  address       String   @db.Text
+  phone         String
+  whatsapp      String?
+  latitude      Float?
+  longitude     Float?
+
+  schedules     AgentSchedule[]
+  bookings      Booking[]
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("agents")
+}
+
+model AgentSchedule {
+  id            String   @id @default(uuid())
+  agentId       String   @map("agent_id")
+  dayOfWeek     Int      // 0 = Sunday, 1 = Monday, etc.
+  openTime      String   // "08:00"
+  closeTime     String   // "17:00"
+
+  agent         Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@map("agent_schedules")
+}
+
+model PromoCode {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  description   String
+  discountType  DiscountType @map("discount_type")
+  discountValue Float    @map("discount_value")
+  minPurchase   Float?   @map("min_purchase")
+  maxDiscount   Float?   @map("max_discount")
+  
+  startDate     DateTime @map("start_date")
+  endDate       DateTime @map("end_date")
+  quotaTotal    Int?     @map("quota_total")
+  quotaUsed     Int      @default(0) @map("quota_used")
+  isActive      Boolean  @default(true) @map("is_active")
+
+  bookings      Booking[]
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("promo_codes")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// ----------------------------------------------------------------------------
+// 7. LOYALTY PROGRAM
+// ----------------------------------------------------------------------------
+model LoyaltyTransaction {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  points        Int
+  type          LoyaltyTxType
+  description   String
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("loyalty_transactions")
+}
+
+enum LoyaltyTxType {
+  EARNED
+  REDEEMED
+  EXPIRED
+}
+
+model LoyaltyVoucher {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  userId        String   @map("user_id")
+  discountValue Float    @map("discount_value")
+  isUsed        Boolean  @default(false) @map("is_used")
+  expiresAt     DateTime @map("expires_at")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("loyalty_vouchers")
+}
+
+// ----------------------------------------------------------------------------
+// 8. CONTENT MANAGEMENT (Blog, Testimonial, etc)
+// ----------------------------------------------------------------------------
+model BlogPost {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  content       String   @db.Text
+  excerpt       String?  @db.Text
+  featuredImage String?  @map("featured_image")
+  authorId      String   @map("author_id")
+  categoryId    String   @map("category_id")
+  isPublished   Boolean  @default(false) @map("is_published")
+  
+  category      BlogCategory @relation(fields: [categoryId], references: [id])
+  tags          BlogTag[]    @relation("PostTags")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @unique
+  
+  posts         BlogPost[]
+
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @unique
+  
+  posts         BlogPost[] @relation("PostTags")
+
+  @@map("blog_tags")
+}
+
+model Testimonial {
+  id            String   @id @default(uuid())
+  passengerName String   @map("passenger_name")
+  city          String
+  route         String
+  rating        Int
+  content       String   @db.Text
+  isApproved    Boolean  @default(false) @map("is_approved")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("testimonials")
+}
+
+// ----------------------------------------------------------------------------
+// 9. MESSAGES & FORMS
+// ----------------------------------------------------------------------------
+model CharterRequest {
+  id            String   @id @default(uuid())
+  picName       String   @map("pic_name")
+  companyName   String?  @map("company_name")
+  whatsapp      String
+  email         String
+  
+  eventType     String   @map("event_type")
+  origin        String
+  destination   String
+  departDate    DateTime @map("depart_date")
+  returnDate    DateTime? @map("return_date")
+  departTime    String   @map("depart_time")
+  
+  passengers    Int
+  busRequested  Int      @map("bus_requested")
+  busClass      String   @map("bus_class")
+  facilities    String   // JSON string or comma-separated
+  notes         String?  @db.Text
+  fileUrl       String?  @map("file_url")
+  
+  status        CharterStatus @default(NEW)
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("charter_requests")
+}
+
+enum CharterStatus {
+  NEW
+  CONTACTED
+  QUOTATION_SENT
+  APPROVED
+  REJECTED
+}
+
+model ContactMessage {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  phone         String?
+  subject       String
+  message       String   @db.Text
+  isRead        Boolean  @default(false) @map("is_read")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+// ----------------------------------------------------------------------------
+// 10. SYSTEM & SETTINGS
+// ----------------------------------------------------------------------------
+model Announcement {
+  id            String   @id @default(uuid())
+  message       String
+  linkUrl       String?  @map("link_url")
+  isActive      Boolean  @default(true) @map("is_active")
+  expiresAt     DateTime? @map("expires_at")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("announcements")
+}
+
+model SiteSettings {
+  id            String   @id @default("1") // Singleton
+  companyName   String   @map("company_name")
+  tagline       String
+  contactPhone  String   @map("contact_phone")
+  contactWa     String   @map("contact_wa")
+  contactEmail  String   @map("contact_email")
+  bankAccounts  Json     @map("bank_accounts") // Setting for manual transfer
+
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  action        String
+  entity        String   // "BOOKING", "ROUTE", "USER"
+  entityId      String   @map("entity_id")
+  oldData       Json?    @map("old_data")
+  newData       Json?    @map("new_data")
+  ipAddress     String?  @map("ip_address")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
+
+model SystemLog {
+  id            String   @id @default(uuid())
+  level         String   // "INFO", "WARN", "ERROR"
+  module        String
+  message       String   @db.Text
+  meta          Json?
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("system_logs")
+}
+
+// ----------------------------------------------------------------------------
+// 11. NOTIFICATIONS
+// ----------------------------------------------------------------------------
+model Notification {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  title         String
+  message       String   @db.Text
+  linkUrl       String?  @map("link_url")
+  isRead        Boolean  @default(false) @map("is_read")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  endpoint      String   @unique
+  p256dh        String
+  auth          String
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("push_subscriptions")
+}
