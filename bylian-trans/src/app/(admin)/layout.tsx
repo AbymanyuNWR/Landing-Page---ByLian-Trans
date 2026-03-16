@@ -5,10 +5,12 @@ import { AdminSidebar } from "@/components/layout/AdminSidebar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
+        <div className="min-h-screen bg-slate-100/50 flex flex-col md:flex-row font-sans">
             <AdminSidebar />
-            <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full max-w-full overflow-x-hidden">
-                {children}
+            <main className="flex-1 overflow-y-auto w-full max-w-[100vw] overflow-x-hidden">
+                <div className="min-h-full p-4 md:p-8 lg:p-10 max-w-7xl mx-auto">
+                    {children}
+                </div>
             </main>
         </div>
     );

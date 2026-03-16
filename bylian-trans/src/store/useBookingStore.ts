@@ -23,6 +23,10 @@ interface BookingState {
     contactData: { name: string; email: string; phone: string; notes?: string } | null;
     setContactData: (data: any) => void;
 
+    // 5. Timer Mechanics
+    bookingExpiresAt: number | null;
+    startTimer: (minutes: number) => void;
+
     // Global reset
     resetBookingFlow: () => void;
 }
@@ -34,7 +38,12 @@ export const useBookingStore = create<BookingState>()(
             setSearchData: (data) => set({ searchData: data, selectedScheduleId: null, selectedSeats: [], passengers: [] }),
 
             selectedScheduleId: null,
-            setSelectedSchedule: (id) => set({ selectedScheduleId: id, selectedSeats: [], passengers: [] }),
+            setSelectedSchedule: (id) => set({ 
+                selectedScheduleId: id, 
+                selectedSeats: [], 
+                passengers: [],
+                bookingExpiresAt: Date.now() + 15 * 60 * 1000 // Automatically start 15 min timer upon branch selection
+            }),
 
             selectedSeats: [],
             addSeat: (seat) =>
@@ -56,6 +65,9 @@ export const useBookingStore = create<BookingState>()(
             contactData: null,
             setContactData: (data) => set({ contactData: data }),
 
+            bookingExpiresAt: null,
+            startTimer: (minutes) => set({ bookingExpiresAt: Date.now() + minutes * 60 * 1000 }),
+
             resetBookingFlow: () =>
                 set({
                     searchData: null,
@@ -63,11 +75,18 @@ export const useBookingStore = create<BookingState>()(
                     selectedSeats: [],
                     passengers: [],
                     contactData: null,
+                    bookingExpiresAt: null,
                 }),
         }),
         {
             name: 'bylian-booking-storage', // saves to local storage so user doesn't lose progress on refresh
-            partialize: (state) => ({ searchData: state.searchData, selectedScheduleId: state.selectedScheduleId, selectedSeats: state.selectedSeats, contactData: state.contactData }), // only persist specific fields
+            partialize: (state) => ({ 
+                searchData: state.searchData, 
+                selectedScheduleId: state.selectedScheduleId, 
+                selectedSeats: state.selectedSeats, 
+                contactData: state.contactData,
+                bookingExpiresAt: state.bookingExpiresAt
+            }), // only persist specific fields
         }
     )
 );

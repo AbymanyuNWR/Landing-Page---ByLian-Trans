@@ -1,7 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { formatIDR, formatDate } from "@/lib/utils";
 import { Ticket as TicketIcon, MapPin, Clock, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { calculateRefundEligibilityAction } from "@/actions/refund";
 
 export function TicketCard({ ticket }: { ticket: any }) {
     const isUpcoming = new Date(ticket.schedule.departureTime) > new Date() && ticket.status === "CONFIRMED";
@@ -79,7 +83,65 @@ export function TicketCard({ ticket }: { ticket: any }) {
                         Detail Pesanan
                     </Link>
                 </div>
+
+                {/* Task 69: Zenith Smart Refund Preview */}
+                {ticket.status === "CONFIRMED" && (
+                    <RefundPreview bookingId={ticket.id} />
+                )}
             </div>
+        </div>
+    );
+}
+
+function RefundPreview({ bookingId }: { bookingId: string }) {
+    const [preview, setPreview] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [show, setShow] = useState(false);
+
+    const handleCheck = async () => {
+        if (show) { setShow(false); return; }
+        setIsLoading(true);
+        const res = await calculateRefundEligibilityAction(bookingId);
+        if (res.success) {
+            setPreview(res.data);
+            setShow(true);
+        }
+        setIsLoading(false);
+    };
+
+    return (
+        <div className="mt-4 pt-4 border-t border-slate-100">
+            <button 
+                onClick={handleCheck}
+                disabled={isLoading}
+                className="text-[10px] font-black uppercase text-slate-400 hover:text-primary transition-colors flex items-center gap-1"
+            >
+                <div className={`w-1.5 h-1.5 rounded-full ${show ? 'bg-primary' : 'bg-slate-300'}`}></div>
+                {isLoading ? "Menghitung Estimasi..." : show ? "Tutup Estimasi Refund" : "Cek Estimasi Refund (Zenith Algorithm)"}
+            </button>
+            
+            {show && preview && (
+                <div className="mt-3 bg-amber-50 border border-amber-100 p-3 rounded-lg animate-in fade-in slide-in-from-top-1">
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-[10px] font-bold text-amber-800 uppercase">Status Kelayakan</span>
+                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${preview.refundPercentage > 0 ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                            {preview.status}
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <p className="text-[10px] text-amber-700">{preview.hoursToDeparture} jam sebelum berangkat</p>
+                            <p className="text-sm font-black text-amber-900">{preview.refundPercentage}% Dana Kembali</p>
+                        </div>
+                        <p className="text-lg font-black text-amber-900 leading-none">
+                            {formatIDR(preview.refundAmount)}
+                        </p>
+                    </div>
+                    <p className="text-[9px] text-amber-600 mt-2 italic leading-tight">
+                        * {preview.note}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

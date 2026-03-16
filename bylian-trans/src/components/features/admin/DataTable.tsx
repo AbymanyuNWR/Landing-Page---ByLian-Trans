@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ChevronDown, MoreHorizontal, Filter } from "lucide-react";
+import { Search, ChevronDown, MoreHorizontal, Filter, Download } from "lucide-react";
 
 interface Column {
     header: string;
@@ -13,9 +13,10 @@ interface DataTableProps {
     columns: Column[];
     data: any[];
     searchPlaceholder?: string;
+    exportFilename?: string;
 }
 
-export function DataTable({ columns, data, searchPlaceholder = "Search..." }: DataTableProps) {
+export function DataTable({ columns, data, searchPlaceholder = "Search...", exportFilename = "data-export.csv" }: DataTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredData = data.filter((row) =>
@@ -23,6 +24,35 @@ export function DataTable({ columns, data, searchPlaceholder = "Search..." }: Da
             v => String(v).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
+
+    const handleExportCSV = () => {
+        // Create CSV Header
+        const headers = columns.map(col => col.header).join(',');
+        
+        // Create CSV Rows
+        const rows = filteredData.map(row => {
+            return columns.map(col => {
+                let cellData = row[col.accessor];
+                // Escape commas and quotes for CSV formatting
+                if (typeof cellData === 'string') {
+                    cellData = `"${cellData.replace(/"/g, '""')}"`;
+                }
+                return cellData;
+            }).join(',');
+        });
+
+        const csvContent = [headers, ...rows].join('\n');
+        
+        // Create Blob and trigger download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", exportFilename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -38,6 +68,9 @@ export function DataTable({ columns, data, searchPlaceholder = "Search..." }: Da
                     />
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <button onClick={handleExportCSV} className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-slate-200 rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors tooltip" title="Ekspor data ke CSV">
+                        <Download className="w-4 h-4" /> Export CSV
+                    </button>
                     <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-slate-200 rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors">
                         <Filter className="w-4 h-4" /> Filter
                     </button>

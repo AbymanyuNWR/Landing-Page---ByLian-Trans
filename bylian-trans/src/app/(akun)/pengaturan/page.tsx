@@ -34,10 +34,13 @@ export default function PengaturanAkunPage() {
                             <p className="text-xs text-slate-500 mt-0.5">Terima info tiket dan promo via WA</p>
                         </div>
                     </div>
-                    {/* simple toggle */}
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    {/* Smooth Animated Toggle */}
+                    <label className="relative inline-flex items-center cursor-pointer group">
                         <input type="checkbox" className="sr-only peer" defaultChecked />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        {/* Track */}
+                        <div className="w-14 h-8 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:bg-primary transition-colors duration-300 ease-in-out shadow-inner"></div>
+                        {/* Knob with tactile squish effect (peer-active stretch) */}
+                        <div className="absolute left-1 top-1 bg-white border border-slate-200 w-6 h-6 rounded-full transition-all duration-300 cubic-bezier(0.4, 0.0, 0.2, 1) peer-checked:translate-x-6 peer-checked:border-white shadow-sm peer-active:w-8 peer-checked:peer-active:translate-x-4"></div>
                     </label>
                 </div>
 
@@ -53,7 +56,10 @@ export default function PengaturanAkunPage() {
                     </div>
                     <label className="relative inline-flex items-center cursor-not-allowed opacity-50">
                         <input type="checkbox" className="sr-only peer" disabled />
-                        <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-slate-400 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5"></div>
+                        {/* Track */}
+                        <div className="w-14 h-8 bg-slate-200 rounded-full peer peer-checked:bg-slate-400 transition-colors duration-300"></div>
+                        {/* Knob */}
+                        <div className="absolute left-1 top-1 bg-white border border-slate-200 w-6 h-6 rounded-full transition-all duration-300 shadow-sm"></div>
                     </label>
                 </div>
             </div>

@@ -11,15 +11,15 @@ const passengerSchema = z.object({
     passengers: z.array(z.object({
         seatId: z.string(),
         seatNumber: z.string(),
-        name: z.string().min(3, "Nama minimal 3 karakter"),
-        idNumber: z.string().min(10, "Nomor Identitas tidak valid"),
+        name: z.string().min(3, "Nama minimal 3 karakter").max(50, "Maksimal 50 karakter"),
+        idNumber: z.string().regex(/^[0-9]{16}$/, "NIK/Paspor harus tepat 16 digit angka"),
         gender: z.enum(["MALE", "FEMALE"]),
         birthDate: z.string().min(1, "Tanggal lahir wajib diisi")
     })),
     contact: z.object({
         name: z.string().min(3, "Nama Pemesan wajib diisi"),
         email: z.string().email("Format email salah"),
-        phone: z.string().min(10, "Nomor WA tidak valid"),
+        phone: z.string().regex(/^(\+62|62|0)8[1-9][0-9]{6,10}$/, "Nomor WA tidak valid (Contoh: 0812...)"),
         notes: z.string().optional()
     })
 });
@@ -66,6 +66,15 @@ export function PassengerForm({ onSuccess }: PassengerFormProps) {
         onSuccess();
     };
 
+    // Helper to get input classes based on error state for real-time visual feedback
+    const getInputClass = (errorId: string, valuePath: any) => {
+        const error = errorId.split('.').reduce((o: any, i: string) => o?.[i], errors as any);
+        const value = valuePath.split('.').reduce((o: any, i: string) => o?.[i], contactData || passengers); // Needs deeper tracking for full correct/incorrect UI, but simplified here for generic border-colors based on error existance.
+
+        if (error) return "border-red-500 focus-visible:ring-red-500 bg-red-50/50";
+        return "border-slate-200 focus-visible:ring-primary";
+    };
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             {/* Contact Details */}
@@ -74,18 +83,18 @@ export function PassengerForm({ onSuccess }: PassengerFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <Label htmlFor="contact.name">Nama Lengkap</Label>
-                        <Input id="contact.name" {...register("contact.name")} placeholder="Sesuai KTP" />
-                        {errors.contact?.name && <p className="text-red-500 text-xs mt-1">{errors.contact.name.message}</p>}
+                        <Input id="contact.name" {...register("contact.name")} placeholder="Sesuai KTP" className={getInputClass("contact.name", "contact.name")} />
+                        {errors.contact?.name && <p className="text-red-500 text-xs mt-1 font-medium animate-pulse">{errors.contact.name.message}</p>}
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="contact.phone">Nomor WhatsApp</Label>
-                        <Input id="contact.phone" {...register("contact.phone")} placeholder="0812..." type="tel" />
-                        {errors.contact?.phone && <p className="text-red-500 text-xs mt-1">{errors.contact.phone.message}</p>}
+                        <Input id="contact.phone" {...register("contact.phone")} placeholder="0812..." type="tel" className={getInputClass("contact.phone", "contact.phone")} />
+                        {errors.contact?.phone && <p className="text-red-500 text-xs mt-1 font-medium animate-pulse">{errors.contact.phone.message}</p>}
                     </div>
                     <div className="space-y-1 md:col-span-2">
                         <Label htmlFor="contact.email">Alamat Email</Label>
-                        <Input id="contact.email" {...register("contact.email")} placeholder="Untuk pengiriman e-ticket" type="email" />
-                        {errors.contact?.email && <p className="text-red-500 text-xs mt-1">{errors.contact.email.message}</p>}
+                        <Input id="contact.email" {...register("contact.email")} placeholder="Untuk pengiriman e-ticket" type="email" className={getInputClass("contact.email", "contact.email")} />
+                        {errors.contact?.email && <p className="text-red-500 text-xs mt-1 font-medium animate-pulse">{errors.contact.email.message}</p>}
                     </div>
                 </div>
             </div>
@@ -105,13 +114,13 @@ export function PassengerForm({ onSuccess }: PassengerFormProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <Label>Nama Lengkap</Label>
-                            <Input {...register(`passengers.${index}.name`)} placeholder="Sesuai KTP" />
-                            {errors.passengers?.[index]?.name && <p className="text-red-500 text-xs mt-1">{errors.passengers[index]?.name?.message}</p>}
+                            <Input {...register(`passengers.${index}.name`)} placeholder="Sesuai KTP" className={errors.passengers?.[index]?.name ? "border-red-500 bg-red-50/50" : ""} />
+                            {errors.passengers?.[index]?.name && <p className="text-red-500 text-xs mt-1 font-medium animate-pulse">{errors.passengers[index]?.name?.message}</p>}
                         </div>
                         <div className="space-y-1">
                             <Label>NIK / No. Paspor</Label>
-                            <Input {...register(`passengers.${index}.idNumber`)} placeholder="Nomor Identitas" />
-                            {errors.passengers?.[index]?.idNumber && <p className="text-red-500 text-xs mt-1">{errors.passengers[index]?.idNumber?.message}</p>}
+                            <Input {...register(`passengers.${index}.idNumber`)} placeholder="16 Digit NIK" className={errors.passengers?.[index]?.idNumber ? "border-red-500 bg-red-50/50" : ""} />
+                            {errors.passengers?.[index]?.idNumber && <p className="text-red-500 text-xs mt-1 font-medium animate-pulse">{errors.passengers[index]?.idNumber?.message}</p>}
                         </div>
                         <div className="space-y-1">
                             <Label>Jenis Kelamin</Label>

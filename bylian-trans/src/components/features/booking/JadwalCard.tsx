@@ -14,6 +14,8 @@ interface JadwalCardProps {
         departurePool: string;
         arrivalPool: string;
         price: number;
+        finalPrice?: number;
+        breakdown?: string[];
         availableSeats: number;
         duration: string;
         facilities: string[];
@@ -72,7 +74,25 @@ export function JadwalCard({ schedule, onSelect }: JadwalCardProps) {
                 <div className="flex-1 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between items-start md:items-end text-left md:text-right">
                     <div>
                         <span className="text-xs text-slate-500 block mb-1">Sisa {schedule.availableSeats} Kursi</span>
-                        <p className="text-2xl font-black text-primary">{formatIDR(schedule.price)}</p>
+                        <div className="flex flex-col md:items-end">
+                            {schedule.breakdown && schedule.breakdown.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mb-1 justify-start md:justify-end">
+                                    {schedule.breakdown.map((b: string, i: number) => (
+                                        <span key={i} className="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-tight">
+                                            {b}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            <p className="text-2xl font-black text-primary leading-none">
+                                {formatIDR(schedule.finalPrice || schedule.price)}
+                            </p>
+                            {(schedule.finalPrice && schedule.finalPrice > schedule.price) && (
+                                <span className="text-[10px] text-slate-400 line-through">
+                                    {formatIDR(schedule.price)}
+                                </span>
+                            )}
+                        </div>
                         <span className="text-xs text-slate-500">/ penumpang</span>
                     </div>
                     <button

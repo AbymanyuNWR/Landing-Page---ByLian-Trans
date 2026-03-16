@@ -10,7 +10,8 @@ export const PAYMENT_EXPIRY_MINUTES = 60
 export const REDIS_KEYS = {
     SEAT_LOCK: "seat_lock",
     RATE_LIMIT: "rate_limit",
-    ROUTE_CACHE: "route_cache"
+    ROUTE_CACHE: "route_cache",
+    BUS_LOCATION: "bus_loc"
 }
 
 // Internal API Paths

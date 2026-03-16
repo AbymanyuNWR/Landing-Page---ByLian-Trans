@@ -3,6 +3,7 @@
 import { PointsCard } from "@/components/features/loyalty/PointsCard";
 import { PointsHistory } from "@/components/features/loyalty/PointsHistory";
 import { RedeemPointsForm } from "@/components/features/loyalty/RedeemPointsForm";
+import { LoyaltyBenefitsUI } from "@/components/features/loyalty/LoyaltyBenefitsUI";
 
 export default function PoinMemberPage() {
     return (
@@ -14,6 +15,11 @@ export default function PoinMemberPage() {
 
             <div className="grid grid-cols-1 gap-6">
                 <PointsCard points={2500} level="Platinum Sahaja" nextLevel="VIP" progress={80} />
+
+                <div className="mt-8">
+                    <h2 className="text-xl font-bold text-slate-800 mb-4">Member Benefits & Progress</h2>
+                    <LoyaltyBenefitsUI />
+                </div>
 
                 <div className="mt-8">
                     <h2 className="text-xl font-bold text-slate-800 mb-4">Tukarkan Poin Anda</h2>

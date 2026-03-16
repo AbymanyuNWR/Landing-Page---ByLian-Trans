@@ -1,13 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getWhatsAppCsUrl } from "@/lib/whatsapp";
+import { cn } from "@/lib/utils";
 
 export function WhatsAppBubble() {
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState("");
+    const [isOnline, setIsOnline] = useState(true);
+
+    // Business hours logic (08:00 - 20:00)
+    useEffect(() => {
+        const checkBusinessHours = () => {
+            const now = new Date();
+            const hour = now.getHours();
+            setIsOnline(hour >= 8 && hour < 20);
+        };
+        
+        checkBusinessHours();
+        const interval = setInterval(checkBusinessHours, 60000); // Check every minute
+        return () => clearInterval(interval);
+    }, []);
 
     const handleSend = () => {
         if (!message.trim()) return;
@@ -26,10 +41,15 @@ export function WhatsAppBubble() {
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 w-80 mb-4 overflow-hidden"
                     >
-                        <div className="bg-[#25D366] p-4 text-white flex justify-between items-center">
+                        <div className={cn("p-4 text-white flex justify-between items-center transition-colors duration-500", isOnline ? "bg-[#25D366]" : "bg-slate-500")}>
                             <div>
-                                <h3 className="font-bold text-lg leading-none">Bylian Trans CS</h3>
-                                <p className="text-sm opacity-90 mt-1">Kami membalas dalam beberapa menit</p>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-bold text-lg leading-none">Bylian Trans CS</h3>
+                                    <div className={cn("w-2 h-2 rounded-full", isOnline ? "bg-white animate-pulse" : "bg-slate-300")} />
+                                </div>
+                                <p className="text-sm opacity-90 mt-1">
+                                    {isOnline ? "Kami membalas dalam beberapa menit" : "Layanan sedang offline (Buka: 08:00)"}
+                                </p>
                             </div>
                             <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-full transition">
                                 <X className="w-5 h-5" />
@@ -38,7 +58,10 @@ export function WhatsAppBubble() {
 
                         <div className="p-4 bg-slate-50 dark:bg-slate-950 h-48 overflow-y-auto flex flex-col gap-3">
                             <div className="bg-white dark:bg-slate-900 self-start py-2 px-4 rounded-2xl rounded-tl-sm shadow-sm text-sm border border-slate-100 dark:border-slate-800 max-w-[85%]">
-                                Halo! Ada yang bisa kami bantu seputar tiket atau rute Bylian Trans?
+                                {isOnline 
+                                    ? "Halo! Ada yang bisa kami bantu seputar tiket atau rute Bylian Trans?"
+                                    : "Mohon maaf, layanan pelanggan saat ini sedang di luar jam operasional (08:00 - 20:00). Anda dapat meninggalkan pesan dan kami akan membalas segera setelah kami kembali online."
+                                }
                             </div>
                         </div>
 
@@ -65,7 +88,10 @@ export function WhatsAppBubble() {
 
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-[#25D366] hover:bg-[#20bd5a] text-white p-4 rounded-full shadow-lg shadow-[#25D366]/30 transition-transform hover:scale-105 relative z-50 flex items-center justify-center animate-pulse-ring"
+                className={cn(
+                    "text-white p-4 rounded-full shadow-lg transition-all hover:scale-105 relative z-50 flex items-center justify-center",
+                    isOnline ? "bg-[#25D366] hover:bg-[#20bd5a] shadow-[#25D366]/30 animate-pulse-ring" : "bg-slate-500 hover:bg-slate-600 shadow-slate-500/30"
+                )}
             >
                 <span className="sr-only">Hubungi Kami via WhatsApp</span>
                 {isOpen ? <X className="w-7 h-7" /> : <MessageCircle className="w-7 h-7" />}

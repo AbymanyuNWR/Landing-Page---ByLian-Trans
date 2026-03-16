@@ -10,11 +10,13 @@ export async function sendEmail({
     subject,
     react, // Pass a React component for email body
     text,
+    attachments,
 }: {
     to: string | string[];
     subject: string;
     react?: React.ReactElement | React.ReactNode | null;
     text?: string;
+    attachments?: { filename: string; content: Buffer }[];
 }) {
     try {
         const from = "Bylian Trans <no-reply@bylientrans.co.id>"; // Change to verified domain
@@ -35,6 +37,10 @@ export async function sendEmail({
             payload.react = react;
         } else if (text) {
             payload.text = text;
+        }
+
+        if (attachments) {
+            payload.attachments = attachments;
         }
 
         const data = await resend.emails.send(payload);

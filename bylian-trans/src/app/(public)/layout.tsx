@@ -14,7 +14,7 @@ export default function PublicLayout({
             <AnnouncementBar />
             <Navbar />
 
-            <main className="flex-1 w-full bg-slate-50 relative z-0">
+            <main className="flex-1 w-full flex flex-col max-w-[100vw] overflow-x-hidden bg-slate-50 relative z-0">
                 {children}
             </main>
 

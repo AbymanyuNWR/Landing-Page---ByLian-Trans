@@ -59,18 +59,43 @@ export default function AdminOverviewPage() {
                         <CalendarDays className="w-5 h-5 text-primary" /> Keberangkatan Terdekat (Hari Ini)
                     </h3>
                     <div className="space-y-3">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="flex justify-between items-center p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                                <div>
-                                    <p className="font-bold text-slate-800 text-sm">Jakarta - Tegal (BYL-08{i})</p>
-                                    <p className="text-xs text-slate-500">19:00 WIB • Eksekutif</p>
+                        {[
+                            { rute: "Jakarta - Tegal (BYL-081)", waktu: "19:00 WIB • Eksekutif", isi: 32, total: 40, status: "SIAP" },
+                            { rute: "Tegal - Bandung (BYL-075)", waktu: "20:00 WIB • Bisnis AC", isi: 15, total: 32, status: "SIAP" },
+                            { rute: "Semarang - Tegal (BYL-092)", waktu: "21:30 WIB • Super Eks", isi: 20, total: 21, status: "PENUH" },
+                        ].map((item, i) => {
+                            const percent = Math.round((item.isi / item.total) * 100);
+                            const percentColor = percent >= 90 ? "bg-red-500" : percent >= 60 ? "bg-amber-500" : "bg-green-500";
+                            
+                            return (
+                                <div key={i} className="flex flex-col p-3 rounded-xl border border-slate-100 bg-slate-50/50 gap-2">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="font-bold text-slate-800 text-sm">{item.rute}</p>
+                                            <p className="text-xs text-slate-500">{item.waktu}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                                                item.status === 'SIAP' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                            }`}>
+                                                {item.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Seat Fill Bar */}
+                                    <div className="mt-1">
+                                        <div className="flex justify-between text-[10px] font-bold mb-1">
+                                            <span className="text-slate-500">Kapasitas Kursi</span>
+                                            <span className={percent >= 90 ? "text-red-600" : "text-slate-700"}>{item.isi}/{item.total} Seat</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                            <div className={`h-full ${percentColor} rounded-full transition-all duration-1000`} style={{ width: `${percent}%` }}></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-bold text-primary text-sm">32/40 Seat</p>
-                                    <span className="text-[10px] font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded">SIAP</span>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>

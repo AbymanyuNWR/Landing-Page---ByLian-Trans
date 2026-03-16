@@ -10,13 +10,32 @@ export default function ProfilPage() {
                 <p className="text-sm text-slate-500 mt-1">Kelola data pribadi dan preferensi akun Anda.</p>
             </div>
 
+            {/* Profile Completion Indicator */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mb-6">
+                <div className="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 className="font-bold text-slate-800">Kelengkapan Profil</h3>
+                        <p className="text-xs text-slate-500 mt-0.5">Lengkapi profil Anda untuk mengklaim 500 Poin gratis.</p>
+                    </div>
+                    <span className="text-primary font-black text-xl">80%</span>
+                </div>
+                <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full relative" style={{ width: '80%' }}>
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-white/20 animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="p-8 border-b border-slate-100 bg-slate-50 flex items-center gap-6">
-                    <div className="w-24 h-24 bg-slate-200 rounded-full border-4 border-white shadow-md relative group">
-                        <UserCircle className="w-full h-full text-slate-400" />
-                        <button className="absolute inset-0 bg-slate-900/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Camera className="w-6 h-6 text-white" />
-                        </button>
+                <div className="p-8 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+                    <div className="relative">
+                        <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-amber-400 rounded-full animate-pulse blur-sm opacity-50"></div>
+                        <div className="w-24 h-24 bg-slate-200 rounded-full border-4 border-white shadow-md relative group overflow-hidden z-10">
+                            <UserCircle className="w-full h-full text-slate-400" />
+                            <button className="absolute inset-0 bg-slate-900/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <Camera className="w-6 h-6 text-white scale-75 group-hover:scale-100 transition-transform duration-300" />
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-slate-800">Muhamad Budi</h2>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import NextTopLoader from 'nextjs-toploader';
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -65,7 +66,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <Script
           id="json-ld"
@@ -90,7 +91,19 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="font-sans antialiased text-slate-900 dark:text-slate-50 bg-white dark:bg-slate-950">
+      <body className="font-sans antialiased text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 selection:bg-primary/20 selection:text-primary">
+        <NextTopLoader
+          color="#1d4ed8" /* primary color */
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #1d4ed8,0 0 5px #1d4ed8"
+          zIndex={1600}
+        />
         {children}
       </body>
     </html>

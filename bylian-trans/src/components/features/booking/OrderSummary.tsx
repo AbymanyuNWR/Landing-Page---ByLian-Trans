@@ -1,11 +1,22 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useBookingStore } from "@/store/useBookingStore";
 import { formatIDR } from "@/lib/utils";
-import { CheckCircle2, Info } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Info } from "lucide-react";
+import { getEtaCorrection } from "@/actions/fleet";
 
 export function OrderSummary() {
-    const { searchData, selectedSeats } = useBookingStore();
+    const { searchData, selectedSeats, selectedScheduleId } = useBookingStore();
+    const [etaData, setEtaData] = useState<any>(null);
+
+    useEffect(() => {
+        if (selectedScheduleId) {
+            getEtaCorrection(selectedScheduleId).then(res => {
+                if (res.success) setEtaData(res);
+            });
+        }
+    }, [selectedScheduleId]);
 
     const basePrice = selectedSeats.reduce((acc, seat) => acc + (seat.price || 0), 0);
     const serviceFee = 5000;
@@ -19,8 +30,23 @@ export function OrderSummary() {
                 <div className="mb-4 pb-4 border-b border-slate-200 text-sm">
                     <p className="text-slate-500 mb-1">Rute</p>
                     <p className="font-semibold">{searchData.origin} <span className="text-slate-400 mx-1">→</span> {searchData.destination}</p>
-                    <p className="text-slate-500 mt-2 mb-1">Tanggal Keberangkatan</p>
-                    <p className="font-semibold">{new Date(searchData.date).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    
+                    <div className="flex justify-between items-start mt-4">
+                        <div>
+                            <p className="text-slate-500 mb-1">Tanggal Keberangkatan</p>
+                            <p className="font-semibold">{new Date(searchData.date).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        </div>
+                        {etaData && (
+                            <div className="text-right">
+                                <p className="text-[10px] text-slate-500 uppercase font-bold flex items-center gap-1 justify-end">
+                                    <Clock className="w-3 h-3" /> Info Traffic
+                                </p>
+                                <p className={`text-xs font-black ${etaData.intensityStatus === 'HEAVY_CONGESTION' ? 'text-red-500' : 'text-orange-500'}`}>
+                                    +{etaData.trafficImpactMins} Menit
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 

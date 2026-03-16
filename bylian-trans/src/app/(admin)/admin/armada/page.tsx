@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/features/admin/DataTable";
+import { AlertTriangle } from "lucide-react";
 
 const DUMMY_FLEET = [
     { id: "BYL-081", nopol: "G 1234 xx", kelas: "Eksekutif", tipe: "Hino RK8", status: "BEROPERASI" },
@@ -27,8 +28,20 @@ export default function AdminArmadaPage() {
         },
     ];
 
+    const maintenanceBuses = DUMMY_FLEET.filter(b => b.status === "MAINTENANCE");
+
     return (
         <div className="space-y-6">
+            {/* Warning Banner */}
+            {maintenanceBuses.length > 0 && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-pulse shadow-sm shadow-red-100">
+                    <AlertTriangle className="w-5 h-5 shrink-0" />
+                    <p className="text-sm font-bold">
+                        Peringatan: {maintenanceBuses.length} Unit Bus (Kode: {maintenanceBuses.map(b => b.id).join(", ")}) terdeteksi sedang menunggu Perbaikan/Maintenance! Segera keluarkan dari jadwal aktif.
+                    </p>
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Manajemen Armada</h1>

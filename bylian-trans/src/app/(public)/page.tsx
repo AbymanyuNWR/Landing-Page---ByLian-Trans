@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/sections/HeroSection";
 import { MarqueeSection } from "@/components/sections/MarqueeSection";
+import { SearchBoxSection } from "@/components/sections/SearchBoxSection";
 import { KeunggulanSection } from "@/components/sections/KeunggulanSection";
 import { RuteUnggulanSection } from "@/components/sections/RuteUnggulanSection";
 import { CaraPesanSection } from "@/components/sections/CaraPesanSection";
@@ -13,10 +14,18 @@ import { CTASection } from "@/components/sections/CTASection";
 
 export default function HomePage() {
     return (
-        <>
+        <main className="min-h-screen">
             <HeroSection />
-            <MarqueeSection />
-            <SearchWidgetWrapper />
+            
+            {/* Search Widget - Floating over hero */}
+            <section className="relative z-20 -mt-20 sm:-mt-24 px-4 sm:px-6 lg:px-8 mb-12 max-w-7xl mx-auto w-full">
+                <SearchBoxSection />
+            </section>
+
+            <div className="mb-16">
+                <MarqueeSection />
+            </div>
+
             <KeunggulanSection />
             <RuteUnggulanSection />
             <CaraPesanSection />
@@ -27,19 +36,7 @@ export default function HomePage() {
             <GaleriPreviewSection />
             <BlogPreviewSection />
             <CTASection />
-        </>
+        </main>
     );
 }
 
-// Small Wrapper to place search box slightly overlapping Hero
-import { SearchBoxSection } from "@/components/sections/SearchBoxSection";
-
-function SearchWidgetWrapper() {
-    return (
-        <section className="relative z-20 -mt-16 sm:-mt-24 px-4 sm:px-6 lg:px-8 mb-20 max-w-7xl mx-auto w-full">
-            <div className="bg-white rounded-3xl p-2 shadow-2xl shadow-slate-200/50 border border-slate-100">
-                <SearchBoxSection />
-            </div>
-        </section>
-    );
-}
